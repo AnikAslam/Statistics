@@ -1,0 +1,213 @@
+---
+title: "Statistics Assignment"
+author: "Anik Aslam"
+date: "25/01/2020"
+output: html_document
+---
+
+# STEP 1 - Data Collection
+  
+First Export data by running R command provided by professor in dataset.cvs,Importing same data here in variable mydata which contain word per minute (wmp) of 2 type keyboards 1) QWERTY and 2) AZERTY.As well 2 types of systems 1) Auto Correction and 2) no Help.
+
+```{r}
+mydata = read.csv(file.choose(),header = TRUE)
+mydata 
+```
+
+# STEP 2 - Descriptive Statistics
+
+### "Azerty" Keyboard Type
+From Complete set of data, we filtered data of keyboard type AZERTY
+```{r Keyboard type Azerty}
+Azerty <- mydata[ which(mydata$keyboard=='azerty'), ]  # Data where keyboard=Azerty
+Azerty
+```
+
+
+### Mean, Median and Standard Deviation Of AZERTY Keyboard Type
+Calculating the Mean, Median and Standard Deviation of WMP of Keyboard type AZERTY 
+```{r}
+AzertyWmp <- Azerty[c(-1,-2,-3,-4)]  # Exluding each column except Wmp
+Azer <- as.numeric(unlist(AzertyWmp))  #Converting list to Int
+summary(Azer)     #Descriptive Statistics
+sd(Azer)  #Standard deviation of wmp where keyboard is Azerty
+```
+
+### "Qwerty" Keyboard Type
+From Complete set of data, we filtered data of keyboard type QWERTY
+```{r Keyboard type Qwerty}
+Qwerty <- mydata[ which(mydata$keyboard=='qwerty'), ]  # Data where keyboard=Qwerty
+Qwerty
+```
+
+### Mean, Median and Standard Deviation of QWERTY keyboard Type
+Calculating the Mean, Median and Standard Deviation of WMP of Keyboard type QWERTY 
+```{r}
+QwertyWmp <- Qwerty[c(-1,-2,-3,-4)]  # Exluding each column except Wmp
+Qwer <- as.numeric(unlist(QwertyWmp))  #Converting list to Int
+summary(Qwer)     #Descriptive Statistics
+sd(Qwer)  #Standard deviation of wmp where keyboard is Qwerty
+```
+
+### "AutoCorrection" Keyboard System
+From Complete set of data, we filtered data of keyboard System Autocorrection
+```{r Keyboard system AutoCorrection}
+Auto <- mydata[ which(mydata$system=='autocorrection'), ]  # Data where keyboard=Qwerty
+Auto
+```
+
+### Mean, Median and Standard Deviation of AUTOCORRECTION Keyboard System
+Calculating the Mean, Median and Standard Deviation of WMP of Keyboard system autocorrection 
+```{r}
+AutoWmp <- Auto[c(-1,-2,-3,-4)]
+AutoWmpInt <- as.numeric(unlist(AutoWmp))
+summary(AutoWmpInt)
+sd(AutoWmpInt)
+```
+
+### "noHelp" Keyboard System
+From Complete set of data, we filtered data of keyboard System NOHELP
+```{r Keyboard system noHelp}
+nohelp <- mydata[ which(mydata$system=='nohelp'), ]  # Data where keyboard=Qwerty
+nohelp
+```
+
+### Mean. Median and Standard Deviation of keyboard system NOHELP
+Calculating the Mean, Median and Standard Deviation of WMP of Keyboard system NOHELP 
+```{r}
+nohelpWmp <- nohelp[c(-1,-2,-3,-4)]
+nohelpWmpInt <- as.numeric(unlist(nohelpWmp))
+summary(nohelpWmpInt)
+sd(nohelpWmpInt)
+```
+
+# STEP 3 - Plots
+
+## Box Plot Of Both "Azerty" and "Qwerty" keyboard type
+Showing the AZERTY and QWERTY Keyboard type using Box Plot
+```{r}
+#Boxplot of keyboard types AZERTY and QWERTY
+boxplot(Azer,Qwer,xlab="Dataset for keyboard Type AZERTY AND QWERTY",ylab="WMP values")
+axis(1, at = 1:2, labels = c("Azerty" , "Qwerty"))
+```
+
+## Box Plot Of Both "AUTO CORRECTION" and "NO HELP" keyboard system
+Showing the AUTOCORRECTION and NOHELP Keyboard system using Box Plot
+```{r}
+#Boxplot of Nohelp and Auto-Correction of both keyboard Systems
+boxplot(AutoWmpInt,nohelpWmpInt,xlab="Dataset for keyboard System AUTO AND NO HELP",ylab="WMP values")
+axis(1, at = 1:2, labels = c("Auto Correction" , "No Help"))
+```
+
+## Q-Q plot Of Both "Azerty" and "Qwerty" keyboard type
+Showing the data AZERTY and QWERTY Keyboard type using Q-Q PLOT
+```{r}
+#QQ plot of keyboard type AZERTY
+qqnorm(Azer,xlab="Azerty",ylab ="WMP values")
+qqline(Azer, col = "Red", lwd = 2)
+
+#QQ plot of keyboard type QWERTY
+qqnorm(Qwer,xlab="Qwerty",ylab ="WMP values")
+qqline(Qwer, col = "steelblue", lwd = 2)
+```
+
+## Q-Q plot Of Both "AUTOCORRECTION" and "NOHELP" keyboard system
+Showing the data AUTOCORRECTION and NOHELP Keyboard system using Q-Q PLOT
+```{r}
+#QQ plot of keyboard System Nohelp
+qqnorm(nohelpWmpInt,xlab="No Help System",ylab ="WMP values")
+qqline(nohelpWmpInt, col = "ORANGE", lwd = 2)
+
+#QQ plot of keyboard System Autocorrection
+qqnorm(AutoWmpInt,xlab="Auto System",ylab ="WMP values")
+qqline(AutoWmpInt, col = "GREEN", lwd = 2)
+```
+
+### Observation from Box plot and Q-Q PLOT
+Autocorrection keyboard system is faster than nohelp and AZERTY keyboard type is faster than QWERTY.Each data in Q-Q plot showing that they are near to normality.
+
+# STEP 4
+
+## Confidence Interval of keyboard type
+
+Finding the CI of each keyboard type using t.test function with 95% confidence interval and calculating the mean difference of both keyboard type and for ploting it use the package named plotrix.
+```{r}
+#Confidence Interval of the mean WPM for each keyboard type
+ciAzer <- t.test(Azer)$conf.int
+ciQwer <- t.test(Qwer)$conf.int
+cidiff <- t.test(Azer,Qwer)$conf.int
+mAzer <- mean(Azer)
+mQwer <- mean(Qwer)
+plotrix::plotCI(c(1,2),c(mAzer,mQwer),ui=c(ciAzer[2],ciQwer[2]),li=c(ciAzer[1],ciQwer[1]),pch=19,xlab=NA,xaxt='n',xlim=c(.5,2.5),ylab="Azerty and Qwerty")
+axis(1, at = 1:2, labels = c("Azerty" , "Qwerty"))
+plotrix::plotCI(1, mAzer - mQwer, ui=cidiff[2], li=cidiff[1], pch=19, xlab="Diff b/w Azerty and Qwerty", xaxt='n', ylim=c(-1,15),ylab="")
+segments(0, 0, 2,0, lty = 2)
+```
+
+### Conclusion for CI - KEYBOARD TYPE
+Researcher hypothesis related to AZERTY AND QWERTY keyboard type is correct that typing with an AZERTY keyboard is faster than typing with a QWERTY keyboard (H2).Because The mean speed WPM of AZERTY is faster than QWERTY.
+
+## Confidence Interval of keyboard system
+Finding the CI of each keyboard system using t.test function with 95% confidence interval and calculating the mean difference of both keyboard system and for ploting it use the package named plotrix.
+
+```{r}
+#Confidence Interval of the mean WPM for each system
+ciAuto <- t.test(AutoWmpInt)$conf.int
+ciNo <- t.test(nohelpWmpInt)$conf.int
+cidiffer <- t.test(AutoWmpInt,nohelpWmpInt)$conf.int
+mAuto <- mean(AutoWmpInt)
+mNo <- mean(nohelpWmpInt)
+plotrix::plotCI(c(1,2),c(mAuto,mNo ),ui=c(ciAuto[2],ciNo[2]),li=c(ciAuto[1],ciNo[1]),pch=19,xlab=NA,xaxt='n',xlim=c(.5,2.5),ylab="Auto and No help")
+axis(1, at = 1:2, labels = c("Auto" , "No help"))
+plotrix::plotCI(1, mAuto - mNo, ui=cidiff[2], li=cidiff[1], pch=19, xlab="Diff b/w Auto and No help", xaxt='n', ylim=c(-1,15),ylab="")
+segments(0, 0, 2,0, lty = 2)
+```
+
+### Conclusion for CI - KEYBOARD SYSTEM
+Researcher hypothesis related to AUTOCORRECTION AND NOHELP keyboard system is correct that Typing with Auto-Correction is faster than typing with No Help (H1).Because The mean speed WPM of AUTOCORRECT is faster than NOHELP.
+
+# Step 5 - Significance Tests
+
+## For H1 - keyboard type Autocorrection and nohelp
+Null hypothesis - Typing with Auto-Correction is same as typing with No Help 
+
+
+Alternative hypothesis - Typing with Auto-Correction is faster than typing with No Help 
+
+```{r}
+t.test(Azer,Qwer)
+```
+
+### Conclusion for Significance test of H1
+Hence it is viewable that P-value < 0.05 which means the null hypothesis is rejected and alternative hypothesis is correct.And the result of significant test is consistent with CI in step 4.
+
+## For H2 - Keyboard system AZERTY and QWERTY
+Null hypothesis - Typing with AZERTY is same as typing with QWERTY
+
+Alternative hypothesis - Typing with an AZERTY keyboard is faster than typing with a QWERTY keyboard
+
+```{r}
+t.test(AutoWmpInt,nohelpWmpInt)
+```
+
+### Conclusion for significance test of H2
+Hence it is viewable that P-value < 0.05 which means the null hypothesis is rejected and alternative hypothesis is correct.And the result of significant test is consistent with CI in step 4.
+
+# Final Conclusion
+The Descriptive Statistics(Mean, Median and Standard Deviation) are obtained by using R script for AZERTY , QWERTY , typing with Auto-Correction and No-help are calculated which are provided in the output.
+
+1. The mean speed WPM of AZERTY is faster than QWERTY.
+
+2. The mean speed WPM of Auto correction is faster than no help.
+
+3. The Box-plot for keyboard systems and keyboard types are provided above.
+
+4. The Q-Q plot of each system and type shows that data are near to normality.
+
+5. The 95% CI for AZERTY and QWERTY is [0.5669267 8.2393233].
+
+6. The 95% CI For Autocorrection and nohelp is [0.1656323 7.8906177]
+
+7. The Significance test between the Autocorrection and nohelp is carried out     which shows that typing with Autocorrection is faster than nohelp.
+
+8. The Significance test between AZERTY and QWERTY is carried out which shows     that typing with AZERTY is faster than QWERTY.
